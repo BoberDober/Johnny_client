@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>qtquickcontrols2.conf</file>
+    </qresource>
+    <qresource prefix="/image">
+        <file>image/wrapper.jpg</file>
+        <file>image/wrapper1.jpeg</file>
+        <file>image/setting-icon.png</file>
+    </qresource>
+</RCC>
