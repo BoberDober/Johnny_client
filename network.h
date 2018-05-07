@@ -4,20 +4,31 @@
 #include <QObject>
 #include <QTimer>
 #include <QTcpSocket>
+#include <QUdpSocket>
 #include <QHostAddress>
+#include <QByteArray>
+#include <QDataStream>
+#include <QJsonDocument>
+#include <QJsonObject>
+
+
 
 class Network : public QObject
 {
     Q_OBJECT
     QTcpSocket *client;
+    QUdpSocket *client_move;
     QHostAddress ip_server;
     quint16 port_server;
+    quint16 port_server_move;
     QTimer *timer;
     bool connected;
 public:
     explicit Network(QObject *parent = 0);
+    void sendDataMove(int typeControl, int x, int y);
+    ~Network();
 signals:
-    void dataChange(float flatTemperature, float flatHumidity, float outsideTemperature, float outsideHumidity);
+    void dataReceived(QString jsonStr);
     void connectedChange(bool status);
 
 public slots:
@@ -26,6 +37,7 @@ public slots:
     void onDisconnected();
     void reConnect();
     void changeIP(QString new_ip);
+    void sendData(QString data);
 };
 
 #endif // NETWORK_H
