@@ -2,16 +2,23 @@
 
 Core::Core(QObject *parent) : QObject(parent)
 {
-    network = new Network();
-
+    qRegisterMetaType<CurrentData*>();
+//    qRegisterMetaType<DHTData>();
+    network = new Network(this);
+    m_currentData = new CurrentData(this);
     connect(network, SIGNAL(dataReceived(QString)), this, SLOT(dataReveiced(QString)));
-    connect(network, SIGNAL(connectedChange(bool)), this, SIGNAL(changeConnected(bool)));
+    connect(network, SIGNAL(connectedChange(bool)), this, SLOT(connectedChange(bool)));
     connect(this, SIGNAL(dataSend(QString)), network, SLOT(sendData(QString)));
 }
 
 void Core::autorization()
 {
     network->reConnect();
+}
+
+void Core::connectedChange(bool connected)
+{
+    m_currentData->setConnectedClient(connected);
 }
 
 void Core::changeIP(QString new_ip)
@@ -28,14 +35,20 @@ void Core::dataReveiced(QString jsonStr)
         {
             double temperature = jsonTmpObj.value("TEMPERATURE").toDouble();
             double humidity = jsonTmpObj.value("HUMIDITY").toDouble();
-            emit changeDHT_flat(temperature, humidity);
+            m_currentData->setFlatTemperature(temperature);
+            m_currentData->setFlatHumidity(humidity);
         }
         else if(key == "DHT_OUTSIDE")
         {
             double temperature = jsonTmpObj.value("TEMPERATURE").toDouble();
-            qDebug() << temperature;
             double humidity = jsonTmpObj.value("HUMIDITY").toDouble();
-            emit changeDHT_outside(temperature, humidity);
+            m_currentData->setOutsideTemperature(temperature);
+            m_currentData->setOutsideHumidity(humidity);
+        }
+        else if(key == "ULTRASONIC")
+        {
+            double distance = jsonTmpObj.value("DISTANCE").toDouble();
+            emit changeDistance(distance);
         }
     }
 }
@@ -81,5 +94,4 @@ void Core::sendDataMove(int typeControl, int x, int y)
 {
     network->sendDataMove(typeControl, x, y);
 }
-
 

@@ -4,7 +4,8 @@ CONFIG += c++11
 
 SOURCES += main.cpp \
     core.cpp \
-    network.cpp
+    network.cpp \
+    currentdata.cpp
 
 RESOURCES += qml.qrc
 # Additional import path used to resolve QML modules in Qt Creator's code model
@@ -31,7 +32,8 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     core.h \
-    network.h
+    network.h \
+    currentdata.h
 
 DISTFILES += \
     android/AndroidManifest.xml \

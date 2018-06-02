@@ -4,16 +4,17 @@
         <file>qtquickcontrols2.conf</file>
         <file>TemperatureModule.qml</file>
         <file>NetworkModule.qml</file>
-        <file>ColorWheel.qml</file>
         <file>CircleMenu.qml</file>
         <file>ColorModule.qml</file>
-        <file>NeonModule.qml</file>
         <file>StickModule.qml</file>
         <file>StickEnableModule.qml</file>
         <file>TemperatureEnableModule.qml</file>
         <file>JJoystick.qml</file>
         <file>joystickFOO.js</file>
         <file>ControlModule.qml</file>
+        <file>EchoDisplay.qml</file>
+        <file>LightMenu.qml</file>
+        <file>ColorWheel.qml</file>
     </qresource>
     <qresource prefix="/image">
         <file>image/wrapper1.jpeg</file>
@@ -21,10 +22,10 @@
         <file>image/led_icon.png</file>
         <file>image/test_icon.png</file>
         <file>image/circle-icon.png</file>
-        <file>image/neon_icon.png</file>
         <file>image/stick_icon.png</file>
         <file>image/colorCircle.png</file>
         <file>image/control_icon.png</file>
+        <file>image/weather_icon.png</file>
     </qresource>
     <qresource prefix="/content">
         <file alias="ColorUtils.js">content/ColorUtils.js</file>

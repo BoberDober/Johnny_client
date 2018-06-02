@@ -2,7 +2,6 @@ import QtQuick 2.7
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.2
-import "content/ColorUtils.js" as ColorUtils
 
 ApplicationWindow {
     visible: true
@@ -14,6 +13,7 @@ ApplicationWindow {
 
     signal changeStick(bool position)
     signal changeSensors(bool position)
+    signal changeHUD(bool position)
 
     onChangeStick: {
         if(position)
@@ -35,83 +35,39 @@ ApplicationWindow {
         }
     }
 
-    property vector3d vectorColors: Qt.vector3d(0, 0, 255)
+    onChangeHUD: {
+        if(position)
+            echoDisplay.visible = true
+        else
+            echoDisplay.visible = false
+    }
+
     property string flatTemperature
     property int typeLED: 1
-
+    property string typeControl: "control" //control - ручное autonomous - автономное
 
     Connections {
         target: core
-        onChangeDHT_flat: {
-            dht_flat.temperature = temperature.toFixed(2)
-            dht_flat.humidity = humidity.toFixed(2)
-        }
 
-        onChangeDHT_outside: {
-            dht_outside.temperature = temperature.toFixed(2)
-            dht_outside.humidity = humidity.toFixed(2)
-        }
-
-        onChangeConnected:
-        {
-            if(status)
-                statusRect.color = "green"
-            else
-                statusRect.color = "red"
+        onChangeDistance: {
+            echoDisplay.digitalDistance = Math.round(distance)
+            echoDisplay.lightIndicator(distance)
         }
     }
-
-    onVectorColorsChanged: {
-
-        if(vectorColors.x < 0)
-            vectorColors.x = 0
-        else if(vectorColors.y < 0)
-            vectorColors.y = 0
-        else if(vectorColors.z < 0)
-            vectorColors.z = 0
-
-        if(typeLED == 1)
-        {
-            gradTop.color = ColorUtils.rgbToHex(vectorColors.x, vectorColors.y, vectorColors.z)
-        }
-        else if(typeLED == 2)
-        {
-            grad.color = ColorUtils.rgbToHex(vectorColors.x, vectorColors.y, vectorColors.z)
-        }
-        else if(typeLED == 0)
-        {
-            grad.color = ColorUtils.rgbToHex(vectorColors.x, vectorColors.y, vectorColors.z)
-            gradTop.color = ColorUtils.rgbToHex(vectorColors.x, vectorColors.y, vectorColors.z)
-        }
-        core.sendData(typeLED, vectorColors.x, vectorColors.y, vectorColors.z)
-    }
-
-    Rectangle {
-        anchors.right: parent.right
-        anchors.top: parent.top
-        anchors.left: parent.left
-        height: parent.height / 3
-        gradient: Gradient {
-            GradientStop { id: gradTop; position: 0; color: "yellow" }
-            GradientStop { position: 0.9; color: "transparent" }
-        }
-    }
-
-    Rectangle {
-        anchors.right: parent.right
-        anchors.bottom: parent.bottom
-        anchors.left: parent.left
-        height: parent.height / 3
-        gradient: Gradient {
-            GradientStop { position: 0; color: "transparent" }
-            GradientStop { id: grad; position: 0.9; color: "yellow" }
-        }
-    }
-
 
     Image {
         anchors.fill: parent
 //        source: "qrc:/image/image/wrapper1.jpeg"
+
+        EchoDisplay {
+            id: echoDisplay
+            width: parent.width / 2
+            height: parent.height * 0.08
+            visible: false
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: parent.top
+            anchors.topMargin: height / 3
+        }
 
         Rectangle {
             id: statusRect
@@ -119,7 +75,9 @@ ApplicationWindow {
             anchors.left: parent.left
             width: 20
             height: 20
-            color: "red"
+//            color: "red"
+            color: core.currentData.connectedClient ? "green" : "red"//"red"
+
         }
 
         CircleMenu {
@@ -152,6 +110,8 @@ ApplicationWindow {
                 width: main.width * 0.2
                 height: main.height * 0.2
                 title: "Улица"
+                temperature: core.currentData.outsideTemperature.toFixed(2)
+                humidity: core.currentData.outsideHumidity.toFixed(2)
             }
 
             TemperatureModule {
@@ -160,6 +120,8 @@ ApplicationWindow {
                 width: parent.width * 0.2
                 height: parent.height * 0.2
                 title: "Квартира"
+                temperature: core.currentData.flatTemperature.toFixed(2)
+                humidity: core.currentData.flatHumidity.toFixed(2)
             }
         }
 
@@ -191,23 +153,6 @@ ApplicationWindow {
             }
         }
     }
-
-
-
-//    Component {
-//        id: stickComponent
-//        StickModule {
-//            anchors.fill: parent
-//        }
-//    }
-
-//    Loader {
-//        id: stickLoader
-//        anchors.left: parent.left
-//        anchors.bottom: parent.bottom
-//        anchors.right: parent.right
-//        height: parent.height / 2
-//    }
 
     StickModule {
         id: stickModule

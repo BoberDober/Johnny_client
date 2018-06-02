@@ -1,25 +1,6 @@
 import QtQuick 2.0
 
 Item {
-    function changeTypeLED() {
-        typeLED++
-        console.log(typeLED)
-        if(typeLED == 1)
-        {
-            closeBottomLine()
-            topAnimatonOpen.start()
-        }
-        else if(typeLED == 2)
-        {
-            topAnimatonClose.start()
-            openBottomLine()
-        }
-        else if(typeLED == 3)
-        {
-            topAnimatonOpen.start()
-            typeLED = 0
-        }
-    }
 
     function openBottomLine() {
         bottomRect.color = "black"
@@ -104,9 +85,6 @@ Item {
             colors: main.vectorColors
             onColorsChanged: {
                 vectorColors = colors
-            }
-            onDoubleClick: {
-                changeTypeLED()
             }
         }
         Rectangle {

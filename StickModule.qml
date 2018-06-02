@@ -21,6 +21,7 @@ Item {
        onChangeMove: {
            root.value_x = valueX
            core.sendDataMove(0, root.value_x, root.value_y)
+           main.typeControl = "control"
        }
    }
 
@@ -39,6 +40,7 @@ Item {
        onChangeMove: {
            root.value_y = valueY
            core.sendDataMove(0, root.value_x, root.value_y)
+           main.typeControl = "control"
        }
    }
 }

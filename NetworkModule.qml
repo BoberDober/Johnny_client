@@ -11,7 +11,7 @@ Item {
 
         TextField {
             id: textinputID
-            text: "192.168.1.6"
+            text: "192.168.1.7"
             anchors.left: parent.left
             anchors.leftMargin: parent.width * 0.1
             anchors.right: parent.right

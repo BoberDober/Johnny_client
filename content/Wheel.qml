@@ -8,7 +8,6 @@ Item {
 
     signal accepted()
     signal updateHS(var hueSignal, var saturationSignal)
-    signal changeType()
 
     states :
         State {
@@ -111,13 +110,12 @@ Item {
 
                     hue = Math.ceil((Math.atan2(((cursor.y+pickerCursor.r-wheel.height/2)*(-1)),((cursor.x+pickerCursor.r-wheel.width/2)))/(Math.PI*2)+0.5)*100)/100
                     saturation = Math.ceil(Math.sqrt(Math.pow(cursor.x+pickerCursor.r-width/2,2)+Math.pow(cursor.y+pickerCursor.r-height/2,2))/wheel.height*2*100)/100;
-                    root.updateHS(hue, saturation) ;
+                    root.updateHS(hue, saturation);
                 }
             }
             anchors.fill: parent
             onPositionChanged: keepCursorInWheel(mouse, wheelArea,  wheel)
             onPressed: keepCursorInWheel(mouse, wheelArea, wheel)
-            onDoubleClicked: changeType()
             onReleased: {
                 root.state = ''
                 root.accepted() ;

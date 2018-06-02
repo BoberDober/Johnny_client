@@ -30,8 +30,5 @@ Item {
         onAccepted: {
             root.accepted()
         }
-        onChangeType: {
-            doubleClick()
-        }
     }
 }

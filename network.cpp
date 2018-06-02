@@ -44,7 +44,6 @@ void Network::onReadyRead()
     QByteArray datagram;
     QString jsonStr;
     datagram = client->readAll();
-//    qDebug() << datagram.size();
     QDataStream ds(&datagram, QIODevice::ReadOnly);
     ds >> jsonStr;
     qDebug() << jsonStr;
