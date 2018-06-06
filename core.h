@@ -3,15 +3,15 @@
 
 #include <QObject>
 #include <QDebug>
+#include <QSettings>
+#include <QVector3D>
 #include "currentdata.h"
-
 #include "network.h"
 
 class Core : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(CurrentData* currentData  MEMBER m_currentData CONSTANT)
-    Network *network;
 public:
     explicit Core(QObject *parent = 0);
 signals:
@@ -22,10 +22,13 @@ public slots:
     void connectedChange(bool connected);
     void changeIP(QString new_ip);
     void dataReveiced(QString jsonStr);
-    void sendData(int typeLED, int r, int g, int b);
+    void sendRGBColor(int typeLED, QVector3D rgb);
+    void sendRGBMode(int typeLED);
     void sendDataNeon(bool status);
     void sendDataMove(int typeControl, int x, int y);
 private:
+    QSettings *setting;
+    Network *network;
     CurrentData *m_currentData;
 };
 

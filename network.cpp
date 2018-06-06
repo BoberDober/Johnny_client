@@ -2,7 +2,6 @@
 
 Network::Network(QObject *parent) : QObject(parent)
 {
-    ip_server = QHostAddress::LocalHost;
     port_server = 8000;
     port_server_move = 8001;
     connected = false;

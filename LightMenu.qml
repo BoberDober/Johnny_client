@@ -6,7 +6,7 @@ Popup {
     id: root
 
     property vector3d vectorColors: Qt.vector3d(0, 0, 0)
-    property int mode: 0
+    property int currentLED: 1
     onVectorColorsChanged: {
         console.log(vectorColors.x + " " + vectorColors.y + " " + vectorColors.z)
         if(vectorColors.x < 0)
@@ -15,25 +15,57 @@ Popup {
             vectorColors.y = 0
         else if(vectorColors.z < 0)
             vectorColors.z = 0
-
-        if(typeLED == 1)
+        if(root.currentLED == 1)
         {
-            topLED.color = ColorUtils.rgbToHex(vectorColors.x, vectorColors.y, vectorColors.z)
+            core.currentData.rgbTop = vectorColors
         }
-        else if(typeLED == 2)
+        else if(root.currentLED == 2)
         {
-            bottomLED.color = ColorUtils.rgbToHex(vectorColors.x, vectorColors.y, vectorColors.z)
+            core.currentData.rgbBottom = vectorColors
         }
-        else if(typeLED == 0)
+        else if(root.currentLED == 3)
         {
-            bottomLED.color = ColorUtils.rgbToHex(vectorColors.x, vectorColors.y, vectorColors.z)
-            topLED.color = ColorUtils.rgbToHex(vectorColors.x, vectorColors.y, vectorColors.z)
+            core.currentData.rgbTop = vectorColors
+            core.currentData.rgbBottom = vectorColors
         }
-        core.sendData(typeLED, vectorColors.x, vectorColors.y, vectorColors.z)
+        core.sendRGBColor(root.currentLED, vectorColors)
     }
 
-    onModeChanged: {
-        console.log(mode)
+    function changeMode(mode)
+    {
+        if(root.currentLED === 1)
+        {
+            core.currentData.modeLEDTop = mode
+        }
+        else if(root.currentLED === 2)
+            core.currentData.modeLEDBottom = mode
+        else if(root.currentLED === 3)
+        {
+            core.currentData.modeLEDTop = mode
+            core.currentData.modeLEDBottom = mode
+        }
+        core.sendRGBMode(root.currentLED)
+    }
+
+    function checkedMode(mode)
+    {
+        if(root.currentLED == 1)
+            if(core.currentData.modeLEDTop === mode)
+                return true
+            else
+                return false
+        else if(root.currentLED == 2)
+            if(core.currentData.modeLEDBottom === mode)
+                return true
+            else
+                return false
+        else if(root.currentLED == 3)
+            if(core.currentData.modeLEDTop === mode && core.currentData.modeLEDBottom === mode)
+                return true
+            else
+                return false
+        else
+            return false
     }
 
     ListModel {
@@ -66,29 +98,33 @@ Popup {
         id: colorModeComponent
         Column {
             anchors.fill: parent
-            Switch{
-                id: mode1
+            RadioButton {
                 text: "Наугад"
-                checked: (root.mode == 1) ? mode1.checked = true : mode1.checked = false
-                onPositionChanged: root.mode = 1
+                checked: checkedMode(1)
+                width: parent.width
+                height: parent.height / 4
+                onClicked: root.changeMode(1)
             }
-            Switch{
-                id: mode2
+            RadioButton {
                 text: "Вперед"
-                checked: (root.mode == 2) ? mode2.checked = true : mode2.checked = false
-                onPositionChanged: root.mode = 2
+                width: parent.width
+                height: parent.height / 4
+                checked: checkedMode(2)
+                onClicked: root.changeMode(2)
             }
-            Switch{
-                id: mode3
+            RadioButton {
                 text: "Назад"
-                checked: (root.mode == 3) ? mode3.checked = true : mode3.checked = false
-                onPositionChanged: root.mode = 3
+                width: parent.width
+                height: parent.height / 4
+                checked: checkedMode(3)
+                onClicked: root.changeMode(3)
             }
-            Switch{
-                id: mode4
+            RadioButton {
                 text: "Плавно"
-                checked: (root.mode == 4) ? mode4.checked = true : mode4.checked = false
-                onPositionChanged: root.mode = 4
+                width: parent.width
+                height: parent.height / 4
+                checked: checkedMode(4)
+                onClicked: root.changeMode(4)
             }
         }
     }
@@ -144,16 +180,6 @@ Popup {
                         sourceComponent: colorCircleComponent
                     }
 
-//                    ColorWheel {
-//                        width: parent.width * 0.9
-//                        height: width
-//                        anchors.top: parent.top
-//                        anchors.horizontalCenter: parent.horizontalCenter
-//                        colors: root.vectorColors
-//                        onColorsChanged: {
-//                            vectorColors = colors
-//                        }
-//                    }
                     Rectangle {
                         width: parent.width * 0.9
                         height: parent.height * 0.15
@@ -169,7 +195,11 @@ Popup {
                         MouseArea {
                             id: offArea
                             anchors.fill: parent
-                            onClicked: vectorColors = Qt.vector3d(0, 0, 0)
+                            onClicked: {
+                                core.currentData.modeLEDTop = 0
+                                core.currentData.modeLEDBottom = 0
+                                vectorColors = Qt.vector3d(0, 0, 0)
+                            }
                         }
                     }
                 }
@@ -191,20 +221,29 @@ Popup {
                             checked: true
                             width: parent.width
                             height: parent.height / 3
-                            onClicked: main.typeLED = 1
+                            onClicked:
+                            {
+                                root.currentLED = 1
+                            }
 
                         }
                         RadioButton {
                             text: "Нижняя лента"
                             width: parent.width
                             height: parent.height / 3
-                            onClicked: main.typeLED = 2
+                            onClicked:
+                            {
+                                root.currentLED = 2
+                            }
                         }
                         RadioButton {
                             text: "Две ленты"
                             width: parent.width
                             height: parent.height / 3
-                            onClicked: main.typeLED = 0
+                            onClicked:
+                            {
+                                root.currentLED = 3
+                            }
                         }
                     }
                     ComboBox {
@@ -219,9 +258,12 @@ Popup {
                             {
                             case 0:
                                 colorLoader.sourceComponent = colorCircleComponent
+                                core.currentData.modeLEDTop = 0
+                                core.currentData.modeLEDBottom = 0
                                 break;
                             case 1:
                                 colorLoader.sourceComponent = colorModeComponent
+                                vectorColors = Qt.vector3d(0, 0, 0)
                                 break;
                             default:
                                 colorLoader.sourceComponent = colorCircleComponent
@@ -248,7 +290,7 @@ Popup {
                             id: topLED
                             width: parent.width
                             height: parent.height / 2
-                            color: "black"
+                            color: ColorUtils.rgbToHex(core.currentData.rgbTop.x, core.currentData.rgbTop.y, core.currentData.rgbTop.z)
                             border {
                                 width: 1
                                 color: "black"
@@ -258,7 +300,7 @@ Popup {
                             id: bottomLED
                             width: parent.width
                             height: parent.height / 2
-                            color: "black"
+                            color: ColorUtils.rgbToHex(core.currentData.rgbBottom.x, core.currentData.rgbBottom.y, core.currentData.rgbBottom.z)
                             border {
                                 width: 1
                                 color: "black"

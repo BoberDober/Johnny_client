@@ -43,7 +43,6 @@ ApplicationWindow {
     }
 
     property string flatTemperature
-    property int typeLED: 1
     property string typeControl: "control" //control - ручное autonomous - автономное
 
     Connections {
@@ -76,7 +75,7 @@ ApplicationWindow {
             width: 20
             height: 20
 //            color: "red"
-            color: core.currentData.connectedClient ? "green" : "red"//"red"
+            color: core.currentData.connectedClient ? "green" : "red"
 
         }
 
